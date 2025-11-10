@@ -1,132 +1,152 @@
 import sys
-from PySide6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QProgressBar
-)
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QProgressBar, QCheckBox
 from PySide6.QtCore import QTimer, Qt
-import pygame
-import numpy as np
+from playsound3 import playsound
 
-def beep(frequency=1000, duration_ms=200, volume=0.5):
-    pygame.mixer.init(frequency=44100, size=-16, channels=2)
-    
-    sample_rate = 44100
-    t = np.linspace(0, duration_ms / 1000, int(sample_rate * duration_ms / 1000), False)
-    wave = 32767 * np.sin(2 * np.pi * frequency * t)
-    wave = wave.astype(np.int16)
-    
-    # Make it 2D for stereo: duplicate the array
-    stereo_wave = np.column_stack([wave, wave])
-    
-    sound = pygame.sndarray.make_sound(stereo_wave)
-    sound.set_volume(volume)
-    sound.play()
-    
-    # Wait for the sound to finish
-    pygame.time.delay(duration_ms)
 
-class PomodoApp(QWidget):
-    def __init__(self):
+class PomodoroApp(QWidget):
+    def __init__(self, work_minutes=25, short_break_minutes=5, long_break_minutes=15, sessions_before_long_break=4):
         super().__init__()
-        self.setWindowTitle("Pomodo - Work")
-        self.setFixedSize(300, 200)
-        self.init_ui()
-        self.init_state()
 
-    def init_ui(self):
+        # Timer durations in seconds (allow fractional minutes)
+        self.work_time = round(work_minutes * 60)
+        self.short_break = round(short_break_minutes * 60)
+        self.long_break = round(long_break_minutes * 60)
+        self.sessions_before_long_break = sessions_before_long_break
+
+        # State
+        self.time_left = self.work_time
+        self.is_running = False
+        self.current_session = 'work'
+        self.completed_work_sessions = 0
+
+        # GUI Setup
+        self.setFixedSize(320, 200)  # window width
         layout = QVBoxLayout()
 
-        self.timer_label = QLabel("25:00")
+        # Timer label
+        self.timer_label = QLabel(self.format_time(self.time_left))
         self.timer_label.setAlignment(Qt.AlignCenter)
         self.timer_label.setStyleSheet("font-size: 36px;")
         layout.addWidget(self.timer_label)
 
-        self.progress = QProgressBar()
-        self.progress.setMaximum(100)  # percentage of current session
-        self.progress.setValue(0)
-        self.progress.setTextVisible(True)
-        layout.addWidget(self.progress)
+        # Progress bar
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, self.work_time)
+        self.progress_bar.setValue(0)
+        layout.addWidget(self.progress_bar)
 
-        self.start_btn = QPushButton("Start")
-        self.start_btn.clicked.connect(self.toggle_timer)
-        layout.addWidget(self.start_btn)
+        # Start/Pause button
+        self.start_button = QPushButton("Start")
+        self.start_button.clicked.connect(self.toggle_timer)
+        layout.addWidget(self.start_button)
 
-        self.reset_btn = QPushButton("Reset")
-        self.reset_btn.clicked.connect(self.reset_timer)
-        layout.addWidget(self.reset_btn)
+        # Reset button
+        self.reset_button = QPushButton("Reset")
+        self.reset_button.clicked.connect(self.reset_timer)
+        layout.addWidget(self.reset_button)
+
+        # Play Sound checkbox
+        self.sound_checkbox = QCheckBox("Play Sound")
+        self.sound_checkbox.setChecked(True)
+        layout.addWidget(self.sound_checkbox)
 
         self.setLayout(layout)
 
-    def init_state(self):
-        self.work_time = 25 * 60
-        self.short_break = 5 * 60
-        self.long_break = 15 * 60
-        self.current_time = self.work_time
-        self.total_time = self.work_time  # used for progress percentage
-        self.in_break = False
-        self.is_running = False
-
+        # Timer
         self.timer = QTimer()
-        self.timer.setInterval(1000)
         self.timer.timeout.connect(self.update_timer)
+
+        # Initialize window title
+        self.update_window_title()
+
+    def format_time(self, seconds):
+        minutes = seconds // 60
+        secs = seconds % 60
+        return f"{minutes:02d}:{secs:02d}"
 
     def toggle_timer(self):
         if self.is_running:
             self.timer.stop()
-            self.start_btn.setText("Start")
+            self.is_running = False
+            self.start_button.setText("Start")
         else:
-            self.timer.start()
-            self.start_btn.setText("Pause")
-        self.is_running = not self.is_running
+            self.timer.start(1000)
+            self.is_running = True
+            self.start_button.setText("Pause")
 
     def reset_timer(self):
         self.timer.stop()
         self.is_running = False
-        self.start_btn.setText("Start")
-        self.current_time = self.total_time
-        self.update_timer_label()
-        self.update_progress()
+        self.current_session = 'work'
+        self.completed_work_sessions = 0
+        self.time_left = self.work_time
+        self.progress_bar.setRange(0, self.work_time)
+        self.progress_bar.setValue(0)
+        self.timer_label.setText(self.format_time(self.time_left))
+        self.start_button.setText("Start")
+        self.update_window_title()
+
+    def update_window_title(self):
+        if self.current_session == 'work':
+            session_number = self.completed_work_sessions + 1
+            title = f"Pomodo - Work Session {session_number}"
+        elif self.current_session == 'short_break':
+            session_number = self.completed_work_sessions
+            title = f"Pomodo - Short Break {session_number}"
+        else:  # long_break
+            title = "Pomodo - Long Break"
+        self.setWindowTitle(title)
+
+    def get_current_session_total(self):
+        if self.current_session == 'work':
+            return self.work_time
+        elif self.current_session == 'short_break':
+            return self.short_break
+        else:
+            return self.long_break
 
     def update_timer(self):
-        if self.current_time > 0:
-            self.current_time -= 1
-            self.update_timer_label()
-            self.update_progress()
+        if self.time_left > 0:
+            self.time_left -= 1
+            self.timer_label.setText(self.format_time(self.time_left))
+            self.progress_bar.setValue(self.get_current_session_total() - self.time_left)
         else:
-            self.timer.stop()
-            self.is_running = False
-            self.start_btn.setText("Start")
-            self.handle_session_end()
+            # Play beep if checkbox is checked
+            if self.sound_checkbox.isChecked():
+                playsound("beep.wav")
 
-    def update_timer_label(self):
-        minutes = self.current_time // 60
-        seconds = self.current_time % 60
-        self.timer_label.setText(f"{minutes:02d}:{seconds:02d}")
+            # Move to next session
+            if self.current_session == 'work':
+                self.completed_work_sessions += 1
+                if self.completed_work_sessions == self.sessions_before_long_break:
+                    self.current_session = 'long_break'
+                    self.time_left = self.long_break
+                else:
+                    self.current_session = 'short_break'
+                    self.time_left = self.short_break
 
-    def update_progress(self):
-        percent = int((self.total_time - self.current_time) / self.total_time * 100)
-        self.progress.setValue(percent)
+            elif self.current_session == 'short_break':
+                self.current_session = 'work'
+                self.time_left = self.work_time
 
-    def handle_session_end(self):
-        beep()
+            else:  # long_break
+                # Auto-reset after long break
+                self.reset_timer()
+                return  # exit early
 
-        if self.in_break:
-            # Break ended → start work
-            self.in_break = False
-            self.current_time = self.work_time
-            self.total_time = self.work_time
-            self.setWindowTitle("Pomodo - Work")
-        else:
-            # Work ended -> start break
-            self.in_break = True
-            self.current_time = self.short_break
-            self.total_time = self.short_break
-            self.setWindowTitle("Pomodo - Short Break")
+            # Update GUI for next session
+            self.progress_bar.setRange(0, self.get_current_session_total())
+            self.progress_bar.setValue(0)
+            self.timer_label.setText(self.format_time(self.time_left))
+            self.update_window_title()
 
-        self.update_timer_label()
-        self.update_progress()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = PomodoApp()
+
+    # Example: fast cycle for testing (fractional minutes)
+    window = PomodoroApp(work_minutes=0.1, short_break_minutes=0.05, long_break_minutes=0.1)
     window.show()
+
     sys.exit(app.exec())
