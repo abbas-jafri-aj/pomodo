@@ -1,6 +1,6 @@
 # Pomodo
 
-A minimalist Pomodoro desktop timer built with **Python 3.11** and **PySide6**.
+A minimalist Pomodoro desktop timer built with **Python 3.11**, **PySide6** and **PlaySound3**.
 Simple interface. Does one job well. Helps you focus.
 
 ---
