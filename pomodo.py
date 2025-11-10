@@ -136,5 +136,5 @@ class Pomodo:
 
 if __name__ == "__main__":
     # For testing fast cycles
-    Pomodo(work_time=0.1, short_break=0.05, long_break=0.08)
-    # Pomodo()
+    # Pomodo(work_time=0.1, short_break=0.05, long_break=0.08)
+    Pomodo()
