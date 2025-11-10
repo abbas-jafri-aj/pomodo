@@ -10,6 +10,7 @@ The app was tested on Python 3.14 and works fine.
 This step is only needed if a user runs into Python version issues.
 
 uv python install 3.11
+
 uv python pin 3.11
 
 ---
