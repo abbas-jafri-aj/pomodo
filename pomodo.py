@@ -3,16 +3,11 @@ from ttkbootstrap.constants import *
 from playsound3 import playsound
 
 class Pomodo:
-    def __init__(self):
+    def __init__(self, work_time=25, short_break=5, long_break=15):
         # Configurable times in minutes
-        self.work_time = 25
-        self.short_break = 5
-        self.long_break = 15
-
-        # For testing fast cycles
-        self.work_time = 0.1
-        self.short_break = 0.05
-        self.long_break = 0.08
+        self.work_time = work_time
+        self.short_break = short_break
+        self.long_break = long_break
 
         self.sessions_completed = 0
         self.current_session = 'work'
@@ -125,4 +120,6 @@ class Pomodo:
         self.root.title(self.get_title())
 
 if __name__ == "__main__":
+    # For testing fast cycles
+    # Pomodo(work_time=0.1, short_break=0.05, long_break=0.08)        
     Pomodo()
