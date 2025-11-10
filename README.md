@@ -21,18 +21,26 @@ uv python pin 3.11
 Create a virtual environment using either `uv` or Python’s built-in `venv`:
 
 # Using uv
+```
 uv venv .venv
+```
 
 # OR using Python directly
+```
 python -m venv .venv
+```
 
 Activate the environment:
 
 # Windows
+```
 .\.venv\Scripts\activate
+```
 
 # Linux / macOS
+```
 source .venv/bin/activate
+```
 
 ---
 
