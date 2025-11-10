@@ -9,9 +9,10 @@ A lightweight, modern-themed Pomodoro Timer built with Python and ttkbootstrap.
 The app was tested on Python 3.14 and works fine.
 This step is only needed if a user runs into Python version issues.
 
+```
 uv python install 3.11
-
 uv python pin 3.11
+```
 
 ---
 
@@ -41,13 +42,6 @@ Upgrade pip and install required packages:
 
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-
-### requirements.txt
-
-pillow==12.0.0
-playsound3==3.3.0
-pywin32==311
-ttkbootstrap==1.18.1
 
 ---
 
