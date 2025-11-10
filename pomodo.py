@@ -14,16 +14,26 @@ class Pomodo:
         self.remaining = int(self.work_time * 60)
         self.is_running = False
 
-        # Create main window
-        self.root = ttk.Window(title=self.get_title(), themename="litera", size=(400,200))
+        # Main window
+        self.root = ttk.Window(title=self.get_title(), themename="litera", size=(400, 400))
         
         # Timer label
         self.timer_label = ttk.Label(self.root, text=self.format_time(self.remaining), font=("Arial", 24))
         self.timer_label.pack(pady=10)
 
-        # Progress bar
-        self.progress = ttk.Progressbar(self.root, length=280, mode='determinate')
-        self.progress.pack(pady=5)
+        # Meter (replaces Progressbar)
+        self.meter = ttk.Meter(
+            self.root,
+            metersize=180,
+            amountused=0,
+            amounttotal=int(self.work_time * 60),
+            stripethickness=10,
+            # subtext="Progress",
+            textright="s",
+            bootstyle="success",
+            subtextstyle="info",
+        )
+        self.meter.pack(pady=5)
 
         # Buttons
         btn_frame = ttk.Frame(self.root)
@@ -33,11 +43,12 @@ class Pomodo:
         self.reset_btn = ttk.Button(btn_frame, text="Reset", width=10, command=self.reset)
         self.reset_btn.pack(side=LEFT, padx=5)
 
-        # Play Sound checkbox
+        # Play sound checkbox
         self.play_sound_var = ttk.BooleanVar(value=True)
         self.sound_cb = ttk.Checkbutton(self.root, text="Play Sound", variable=self.play_sound_var)
         self.sound_cb.pack(pady=5)
 
+        # Timer tick
         self.root.after(1000, self.tick)
         self.root.mainloop()
 
@@ -74,8 +85,9 @@ class Pomodo:
             if self.remaining > 0:
                 self.remaining -= 1
                 self.timer_label.config(text=self.format_time(self.remaining))
-                self.progress['maximum'] = int(self.get_current_session_time() * 60)
-                self.progress['value'] = int(self.get_current_session_time() * 60 - self.remaining)
+                total = int(self.get_current_session_time() * 60)
+                used = total - self.remaining
+                self.meter.configure(amountused=used, amounttotal=total)
             else:
                 self.end_session()
         self.root.after(1000, self.tick)
@@ -105,9 +117,12 @@ class Pomodo:
 
         self.root.title(self.get_title())
 
-        # Auto-reset after long break
+        # Reset after long break
         if self.current_session == 'work' and self.sessions_completed >= 4:
             self.reset()
+        else:
+            self.meter.configure(amountused=0, amounttotal=int(self.get_current_session_time() * 60))
+            self.timer_label.config(text=self.format_time(self.remaining))
 
     def reset(self):
         self.is_running = False
@@ -116,10 +131,10 @@ class Pomodo:
         self.current_session = 'work'
         self.remaining = int(self.work_time * 60)
         self.timer_label.config(text=self.format_time(self.remaining))
-        self.progress['value'] = 0
+        self.meter.configure(amountused=0, amounttotal=int(self.work_time * 60))
         self.root.title(self.get_title())
 
 if __name__ == "__main__":
     # For testing fast cycles
-    # Pomodo(work_time=0.1, short_break=0.05, long_break=0.08)        
-    Pomodo()
+    Pomodo(work_time=0.1, short_break=0.05, long_break=0.08)
+    # Pomodo()
