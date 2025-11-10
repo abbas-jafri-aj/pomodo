@@ -61,6 +61,7 @@ python -m pip install -r requirements.txt
 ```
 python pomodo.py
 ```
+![Alt text](screenshot-work-session.png?raw=true "Work Session")
 
 ---
 
