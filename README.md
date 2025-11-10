@@ -18,7 +18,7 @@ source venv/bin/activate   # (Windows: venv\Scripts\activate)
 
 # Install dependencies
 pip install --upgrade pip setuptools wheel
-pip install PySide6
+pip install -r requirements.txt
 
 # Run the app
 python pomodo.py
