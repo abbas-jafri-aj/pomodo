@@ -40,6 +40,7 @@ source .venv/bin/activate
 
 Upgrade pip and install required packages:
 
+python -m ensurepip
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
