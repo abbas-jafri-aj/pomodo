@@ -40,21 +40,27 @@ source .venv/bin/activate
 
 Upgrade pip and install required packages:
 
+```
 python -m ensurepip
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+```
 
 ---
 
 ## Step 4: Run the App
 
+```
 python pomodo.py
+```
 
 ---
 
 ## Step 5: Deactivate the Virtual Environment
 
+```
 deactivate
+```
 
 ---
 
