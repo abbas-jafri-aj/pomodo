@@ -3,14 +3,26 @@ from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QProgressBar
 )
 from PySide6.QtCore import QTimer, Qt
-import platform
+import pygame
+import numpy as np
 
-def beep():
-    if platform.system() == "Windows":
-        import winsound
-        winsound.Beep(1000, 200)
-    else:
-        print("\a")
+def beep(frequency=1000, duration_ms=200, volume=0.5):
+    pygame.mixer.init(frequency=44100, size=-16, channels=2)
+    
+    sample_rate = 44100
+    t = np.linspace(0, duration_ms / 1000, int(sample_rate * duration_ms / 1000), False)
+    wave = 32767 * np.sin(2 * np.pi * frequency * t)
+    wave = wave.astype(np.int16)
+    
+    # Make it 2D for stereo: duplicate the array
+    stereo_wave = np.column_stack([wave, wave])
+    
+    sound = pygame.sndarray.make_sound(stereo_wave)
+    sound.set_volume(volume)
+    sound.play()
+    
+    # Wait for the sound to finish
+    pygame.time.delay(duration_ms)
 
 class PomodoApp(QWidget):
     def __init__(self):
@@ -104,7 +116,7 @@ class PomodoApp(QWidget):
             self.total_time = self.work_time
             self.setWindowTitle("Pomodo - Work")
         else:
-            # Work ended → start break
+            # Work ended -> start break
             self.in_break = True
             self.current_time = self.short_break
             self.total_time = self.short_break
