@@ -2,7 +2,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from playsound3 import playsound
 
-class PomodoroTTK:
+class Pomodo:
     def __init__(self):
         # Configurable times in minutes
         self.work_time = 25
@@ -125,4 +125,4 @@ class PomodoroTTK:
         self.root.title(self.get_title())
 
 if __name__ == "__main__":
-    PomodoroTTK()
+    Pomodo()
