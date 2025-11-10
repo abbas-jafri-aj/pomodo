@@ -1,105 +1,71 @@
-# Pomodo Timer
+# Pomodo – A Simple Pomodoro Timer
 
-A simple and functional Pomodoro Timer built with Python and PyQt6.
-
----
-
-## Features
-- Work sessions and breaks (short and long)
-- Auto-cycles through work and break sessions
-- Resets automatically after completing all sessions
-- "Start" button toggles to "Pause" while running
-- Optional sound alert (configurable with a checkbox)
-- Clean, compact 320px-wide interface
+A lightweight, modern-themed Pomodoro Timer built with Python and ttkbootstrap.
 
 ---
 
-## Installation and Running Instructions
+## Step 1: (Optional) Install and Pin Python using `uv`
 
-### Step 1: (Optional) Install and Pin Python 3.11 using `uv`
+The app was tested on Python 3.14 and works fine.
+This step is only needed if a user runs into Python version issues.
 
-If you don’t have Python 3.11 installed or want to ensure the correct version:
-
-```
 uv python install 3.11
 uv python pin 3.11
-```
 
 ---
 
-### Step 2: Create Virtual Environment
+## Step 2: Create and Activate a Virtual Environment
 
-You can create the virtual environment using either **uv** or Python’s built-in **venv** module.
+Create a virtual environment using either `uv` or Python’s built-in `venv`:
 
-**Option 1: Using uv**
-```
+# Using uv
 uv venv .venv
-```
 
-**Option 2: Using Python**
-```
+# OR using Python directly
 python -m venv .venv
-```
 
----
+Activate the environment:
 
-### Step 3: Activate the Virtual Environment
-
-**On Windows (PowerShell):**
-```
+# Windows
 .\.venv\Scripts\activate
-```
 
-**On Linux or macOS:**
-```
+# Linux / macOS
 source .venv/bin/activate
-```
 
 ---
 
-### Step 4: Ensure pip is installed and upgraded
-```
-python -m ensurepip
+## Step 3: Install Dependencies
+
+Upgrade pip and install required packages:
+
 python -m pip install --upgrade pip
-```
-
----
-
-### Step 5: Install Required Packages
-```
 python -m pip install -r requirements.txt
-```
+
+### requirements.txt
+
+pillow==12.0.0
+playsound3==3.3.0
+pywin32==311
+ttkbootstrap==1.18.1
 
 ---
 
-### Step 6: Run the Pomodoro Timer
-```
-python .\pomodo.py
-```
+## Step 4: Run the App
+
+python pomodo.py
 
 ---
 
-### Step 7: Deactivate the Virtual Environment
-```
+## Step 5: Deactivate the Virtual Environment
+
 deactivate
-```
-
----
-
-### Step 8: (Optional) Uninstall Python 3.11 if Installed via uv
-```
-uv python uninstall 3.11
-```
 
 ---
 
 ## Notes
-- The app automatically resets after completing all sessions.
-- Use the “Play Sound” checkbox to toggle the completion alert.
-- The long break has no session suffix in the title.
 
----
-
-## Requirements
-- Python 3.11+
-- PyQt6
+- The app automatically plays a beep sound at the end of each session.  
+- You can reset the app using the Reset button.  
+- The “Play Sound” checkbox allows you to toggle sound on or off.  
+- All GUI elements are powered by `ttkbootstrap` for a modern, themed interface.  
+- Optional Python version management is only needed if a user encounters version issues.
