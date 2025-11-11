@@ -18,7 +18,7 @@ class Pomodo:
         self.root = ttk.Window(title=self.get_title(), themename="litera", size=(400, 400))
         
         # Timer label
-        self.timer_label = ttk.Label(self.root, text=self.format_time(self.remaining), font=("Arial", 24))
+        self.timer_label = ttk.Label(self.root, text=self.format_time(self.remaining), font=("Calibri", 24))
         self.timer_label.pack(pady=10)
 
         # Meter (replaces Progressbar)
