@@ -30,7 +30,7 @@ class Pomodo:
             stripethickness=10,
             # subtext="Progress",
             textright="s",
-            bootstyle="success",
+            bootstyle="primary",
             subtextstyle="info",
         )
         self.meter.pack(pady=5)
