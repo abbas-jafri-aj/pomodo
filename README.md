@@ -25,19 +25,19 @@ Create a virtual environment using either `uv` or Python’s built-in `venv`:
 uv venv .venv
 ```
 
-# OR using Python directly
+### OR using Python directly
 ```
 python -m venv .venv
 ```
 
 Activate the environment:
 
-# Windows
+### Windows
 ```
 .\.venv\Scripts\activate
 ```
 
-# Linux / macOS
+### Linux / macOS
 ```
 source .venv/bin/activate
 ```
