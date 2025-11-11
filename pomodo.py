@@ -90,7 +90,7 @@ class Pomodo:
                 self.meter.configure(amountused=used, amounttotal=total)
             else:
                 self.end_session()
-        self.root.after(1000, self.tick)
+        self.root.after(10, self.tick)
 
     def end_session(self):
         if self.play_sound_var.get():
