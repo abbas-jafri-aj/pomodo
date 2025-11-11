@@ -4,11 +4,12 @@ from playsound3 import playsound
 from custom_meter import CustomMeter
 
 class Pomodo:
-    def __init__(self, work_time=25, short_break=5, long_break=15):
+    def __init__(self, work_time=25, short_break=5, long_break=15, clock_speed=1000):
         # Configurable times in minutes
         self.work_time = work_time
         self.short_break = short_break
         self.long_break = long_break
+        self.clock_speed = clock_speed
 
         self.sessions_completed = 0
         self.current_session = 'work'
@@ -44,7 +45,7 @@ class Pomodo:
         self.sound_cb.pack(pady=5)
 
         # Timer tick
-        self.root.after(1, self.tick)
+        self.root.after(self.clock_speed, self.tick)
         self.root.mainloop()
 
     def format_time(self, seconds):
@@ -86,7 +87,7 @@ class Pomodo:
                 self.meter.display_text = self.format_time(self.remaining)
             else:
                 self.end_session()
-        self.root.after(1, self.tick)
+        self.root.after(self.clock_speed, self.tick)
 
     def end_session(self):
         if self.play_sound_var.get():
@@ -130,6 +131,5 @@ class Pomodo:
         self.root.title(self.get_title())
 
 if __name__ == "__main__":
-    # For testing fast cycles
-    # Pomodo(work_time=0.1, short_break=0.05, long_break=0.08)
+    # For testing fast cycles, setting clock_speed to a lower value 
     Pomodo()

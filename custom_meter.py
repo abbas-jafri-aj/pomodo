@@ -1,6 +1,6 @@
-import ttkbootstrap as ttk
+from ttkbootstrap import Meter
 
-class CustomMeter(ttk.Meter):
+class CustomMeter(Meter):
     def __init__(self, *args, **kwargs):
         # Optional: initial display text
         self._display_text = kwargs.pop("display_text", None)
