@@ -1,6 +1,7 @@
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from playsound3 import playsound
+from custom_meter import CustomMeter
 
 class Pomodo:
     def __init__(self, work_time=25, short_break=5, long_break=15):
@@ -15,23 +16,17 @@ class Pomodo:
         self.is_running = False
 
         # Main window
-        self.root = ttk.Window(title=self.get_title(), themename="litera", size=(400, 400))
+        self.root = ttk.Window(title=self.get_title(), themename="litera", size=(400, 320))
         
-        # Timer label
-        self.timer_label = ttk.Label(self.root, text=self.format_time(self.remaining), font=("Calibri", 24))
-        self.timer_label.pack(pady=10)
-
-        # Meter (replaces Progressbar)
-        self.meter = ttk.Meter(
+        # Meter (Circular Progressbar)
+        self.meter = CustomMeter(
             self.root,
             metersize=180,
             amountused=0,
             amounttotal=int(self.work_time * 60),
-            stripethickness=10,
-            # subtext="Progress",
-            textright="s",
+            meterthickness = 20, # thickness of the meter dial
+            stripethickness=0,
             bootstyle="primary",
-            subtextstyle="info",
         )
         self.meter.pack(pady=5)
 
@@ -49,7 +44,7 @@ class Pomodo:
         self.sound_cb.pack(pady=5)
 
         # Timer tick
-        self.root.after(1000, self.tick)
+        self.root.after(1, self.tick)
         self.root.mainloop()
 
     def format_time(self, seconds):
@@ -84,13 +79,14 @@ class Pomodo:
         if self.is_running:
             if self.remaining > 0:
                 self.remaining -= 1
-                self.timer_label.config(text=self.format_time(self.remaining))
                 total = int(self.get_current_session_time() * 60)
                 used = total - self.remaining
                 self.meter.configure(amountused=used, amounttotal=total)
+                # Update the center display text
+                self.meter.display_text = self.format_time(self.remaining)
             else:
                 self.end_session()
-        self.root.after(10, self.tick)
+        self.root.after(1, self.tick)
 
     def end_session(self):
         if self.play_sound_var.get():
@@ -122,7 +118,6 @@ class Pomodo:
             self.reset()
         else:
             self.meter.configure(amountused=0, amounttotal=int(self.get_current_session_time() * 60))
-            self.timer_label.config(text=self.format_time(self.remaining))
 
     def reset(self):
         self.is_running = False
